@@ -72,7 +72,7 @@ Use the `santactl` command to get the sha256 value:
 santactl fileinfo /Applications/Firefox.app
 ```
 
-# Build 
+# Build
 
 The commands below assume you have `$GOPATH/bin` in your path.
 
