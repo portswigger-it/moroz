@@ -5,7 +5,7 @@ concurrency: ${{ github.ref }}
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-test-image:
