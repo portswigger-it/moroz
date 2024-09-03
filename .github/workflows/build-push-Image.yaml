@@ -28,7 +28,7 @@ jobs:
         go-version: '1.23'
         cache-dependency-path: "**/*.sum"
 
-    - name: Build app
+    - name: Build Go app
       run: |
         #!/bin/bash
         export GOOS="linux"
