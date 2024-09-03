@@ -41,7 +41,6 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build ARM64 Image and push to ECR (on main)
-      if: ${{ github.ref == 'refs/heads/main' }}
       uses: docker/build-push-action@v6
       with:
         platforms: linux/arm64
