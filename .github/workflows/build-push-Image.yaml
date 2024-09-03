@@ -46,7 +46,7 @@ jobs:
         context: .
         platforms: linux/arm64
         push: true
-        tags: latest
+        tags: ghcr.io/portswigger-it/portswigger-it/moroz:latest
 
     - name: Trivy Scan
       uses: aquasecurity/trivy-action@master
