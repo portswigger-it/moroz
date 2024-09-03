@@ -53,6 +53,7 @@ func main() {
 		flVersion       = flag.Bool("version", false, "print version information")
 		flDebug         = flag.Bool("debug", false, "log at a debug level by default.")
 		flUseTLS        = flag.Bool("use-tls", true, "I promise I terminated TLS elsewhere when changing this")
+		flLogFmt        = flag.Bool("logfmt", true, "log in logfmt (true) or json (false)")
 	)
 	flag.Parse()
 
@@ -62,7 +63,7 @@ func main() {
 	}
 
 	// Initialize the logger
-	logging.InitLogger(*flDebug)
+	logging.InitLogger(*flDebug, *flLogFmt)
 	logging.Logger.Log("msg", "Application started")
 
 	if _, err := os.Stat(*flTLSCert); *flUseTLS && os.IsNotExist(err) {
