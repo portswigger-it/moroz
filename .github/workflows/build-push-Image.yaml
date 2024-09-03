@@ -43,12 +43,13 @@ jobs:
       run: |
         #!/bin/bash
         export GOOS="linux"
+        cd cmd/moroz
 
         for GOARCH in "amd64" "arm64"
         do
           export GOARCH="${GOARCH}"
           mkdir -p build/${GOOS}/${GOARCH}
-          go build -o ../../build/${GOOS}/${GOARCH}/moroz cmd/moroz
+          go build -o ../../build/${GOOS}/${GOARCH}/moroz .
         done
 
     - name: Log in to GitHub Container Registry
