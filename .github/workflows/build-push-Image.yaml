@@ -26,7 +26,6 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '1.23'
-        cache-dependency-path: "**/*.sum"
 
     - name: Build Go app
       run: |
@@ -61,3 +60,5 @@ jobs:
         platforms: linux/amd64, linux/arm64
         push: true
         tags: ghcr.io/portswigger-it/moroz:latest
+        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache-arm64
+        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache-arm64,mode=max
