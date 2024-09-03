@@ -67,6 +67,7 @@ type EventUploadRequest struct {
 
 // EventUploadEvent is a single event entry
 type EventUploadEvent struct {
+	MachineID                    string         `json:"machine_id,omitempty"`
 	CurrentSessions              []string       `json:"current_sessions"`
 	Decision                     string         `json:"decision"`
 	ExecutingUser                string         `json:"executing_user"`

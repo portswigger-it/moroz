@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -27,15 +28,16 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 		}
 
 		eventPath := filepath.Join(eventDir, fmt.Sprintf("%f.json", ev.UnixTime))
+		ev.EventInfo.MachineID = machineID
 
 		eventInfoJSON, err := json.Marshal(ev.EventInfo)
 		if err != nil {
 			return errors.Wrap(err, "marshal event info to json")
 		}
-
 		if err := os.WriteFile(eventPath, eventInfoJSON, 0644); err != nil {
 			return errors.Wrapf(err, "write event to path %s", eventPath)
 		}
+		log.Printf("%#v", eventInfoJSON)
 	}
 	return nil
 }
