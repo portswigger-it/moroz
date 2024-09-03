@@ -40,13 +40,12 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build ARM64 Image and push to ECR (on main)
+    - name: Build ARM64 Image and push to ghcr.io
       uses: docker/build-push-action@v6
       with:
         platforms: linux/arm64
         push: true
         tags: latest
-        labels: ${{ steps.docker-meta.outputs.labels }}
         cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache-arm64
         cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache-arm64,mode=max
 
