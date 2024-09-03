@@ -40,6 +40,13 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Docker meta
+      id: docker-meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/portswigger-it/moroz:latest
+
+
     - name: Build ARM64 Image and push to ghcr.io
       uses: docker/build-push-action@v6
       with:
