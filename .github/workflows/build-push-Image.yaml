@@ -43,6 +43,7 @@ jobs:
     - name: Build ARM64 Image and push to ghcr.io
       uses: docker/build-push-action@v6
       with:
+        context: .
         platforms: linux/arm64
         push: true
         tags: latest
