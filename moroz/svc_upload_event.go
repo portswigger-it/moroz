@@ -24,6 +24,7 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 	for _, ev := range events {
 		eventDir := filepath.Join(svc.eventDir, ev.FileSHA, machineID)
 		if err := os.MkdirAll(eventDir, 0700); err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to create event directory", "eventDir", eventDir, "err", err)
 			return errors.Wrapf(err, "create event directory %s", eventDir)
 		}
 
@@ -32,9 +33,11 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 
 		eventInfoJSON, err := json.Marshal(ev.EventInfo)
 		if err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to marshal event info to JSON", "err", err)
 			return errors.Wrap(err, "marshal event info to json")
 		}
 		if err := os.WriteFile(eventPath, eventInfoJSON, 0644); err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to write event to path", "eventPath", eventPath, "err", err)
 			return errors.Wrapf(err, "write event to path %s", eventPath)
 		}
 		svc.logger.Log(

@@ -27,6 +27,7 @@ func NewService(ds ConfigStore, eventDir string, flPersistEvents bool, logger lo
 	defer cancel()
 	global, err := ds.Config(ctx, "global")
 	if err != nil {
+		logger.Log("level", "error", "msg", "Failed to fetch global config", "err", err)
 		return nil, err
 	}
 	return &SantaService{

@@ -1,19 +1,15 @@
 package moroz
 
 import (
-	"os"
-
-	"github.com/go-kit/kit/log"
-	kitlog "github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
+	"github.com/groob/moroz/logging"
 )
 
 type Middleware func(Service) Service
 
 func LoggingMiddleware(logger log.Logger) Middleware {
-	logger = kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stdout))
-
 	return func(next Service) Service {
-		return logmw{logger, next}
+		return logmw{logger: logging.Logger, next: next}
 	}
 }
 
