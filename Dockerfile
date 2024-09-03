@@ -14,4 +14,4 @@ COPY build/${TARGETPLATFORM}/moroz /moroz
 
 RUN /moroz --version
 
-CMD [moroz]
+CMD [./moroz]
