@@ -26,18 +26,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '1.23'
-
-    #- name: Build the Go application - amd64
-    #  run: |
-    #    mkdir -p build/linux
-    #    cd cmd/moroz
-    #    go build -o ../../build/linux/moroz.amd64 .
-
-    #- name: Build the Go application - arm64
-    #  run: |
-    #    mkdir -p build/linux
-    #    cd cmd/moroz
-    #    GOARCH=arm64 GOOS=linux go build -o ../../build/linux/moroz.arm64 .
+        cache-dependency-path: "**/*.sum"
 
     - name: Build app
       run: |
