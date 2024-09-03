@@ -47,8 +47,6 @@ jobs:
         platforms: linux/arm64
         push: true
         tags: latest
-        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache-arm64
-        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache-arm64,mode=max
 
     - name: Trivy Scan
       uses: aquasecurity/trivy-action@master
