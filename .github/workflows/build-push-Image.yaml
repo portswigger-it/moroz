@@ -65,10 +65,10 @@ jobs:
       with:
         images: ghcr.io/portswigger-it/moroz:latest
 
-    - name: Build AMD64 Image and push to ghcr.io
+    - name: Build multiarch Image and push to ghcr.io
       uses: docker/build-push-action@v6
       with:
         context: .
-        platforms: linux/amd64
+        platforms: linux/amd64, linux/arm64
         push: true
         tags: ghcr.io/portswigger-it/moroz:latest
