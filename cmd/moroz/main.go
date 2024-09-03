@@ -9,14 +9,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-kit/kit/log/level"
+	//"github.com/go-kit/kit/log/level"
+
+	"github.com/go-kit/log/level"
 	"github.com/gorilla/mux"
 	"github.com/kolide/kit/env"
 	"github.com/kolide/kit/httputil"
-	"github.com/kolide/kit/logutil"
 	"github.com/kolide/kit/version"
 	"github.com/oklog/run"
 
+	"github.com/groob/moroz/logging"
 	"github.com/groob/moroz/moroz"
 	"github.com/groob/moroz/santaconfig"
 )
@@ -59,33 +61,37 @@ func main() {
 		return
 	}
 
+	// Initialize the logger
+	logging.InitLogger(*flDebug)
+	logging.Logger.Log("msg", "Application started")
+
 	if _, err := os.Stat(*flTLSCert); *flUseTLS && os.IsNotExist(err) {
-		fmt.Printf(openSSLBash)
+		logging.Logger.Log("level", "info", "msg", openSSLBash)
+		logging.Logger.Log("level", "info", "msg", "you need to provide at least a 'global.toml' configuration file in the configs folder. See the configs folder in the git repo for an example")
 		os.Exit(2)
 	}
 
 	if !validateConfigExists(*flConfigs) {
-		fmt.Println("you need to provide at least a 'global.toml' configuration file in the configs folder. See the configs folder in the git repo for an example")
-		os.Exit(2)
+		logging.Logger.Log("level", "error", "msg", "you need to provide at least a 'global.toml' configuration file in the configs folder. See the configs folder in the git repo for an example")
+		os.Exit(2) // Exit with a specific status code
 	}
-
-	logger := logutil.NewServerLogger(*flDebug)
 
 	repo := santaconfig.NewFileRepo(*flConfigs)
 	var svc moroz.Service
 	{
-		s, err := moroz.NewService(repo, *flEvents, *flPersistEvents)
+		s, err := moroz.NewService(repo, *flEvents, *flPersistEvents, logging.Logger)
 		if err != nil {
-			logutil.Fatal(logger, err)
+			logging.Logger.Log("level", "error", "msg", "Failed to create service", "err", err)
+			os.Exit(1)
 		}
 		svc = s
-		svc = moroz.LoggingMiddleware(logger)(svc)
+		svc = moroz.LoggingMiddleware(logging.Logger)(svc)
 	}
 
 	endpoints := moroz.MakeServerEndpoints(svc)
 
 	r := mux.NewRouter()
-	moroz.AddHTTPRoutes(r, endpoints, logger)
+	moroz.AddHTTPRoutes(r, endpoints, logging.Logger)
 
 	var g run.Group
 	{
@@ -95,7 +101,9 @@ func main() {
 			signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 			select {
 			case sig := <-c:
-				return fmt.Errorf("received signal %s", sig)
+				err := fmt.Errorf("received signal %s", sig)
+				logging.Logger.Log("level", "error", "msg", "Received signal", "signal", sig, "err", err)
+				return err
 			case <-ctx.Done():
 				return ctx.Err()
 			}
@@ -107,7 +115,8 @@ func main() {
 	{
 		srv := httputil.NewServer(*flAddr, r)
 		g.Add(func() error {
-			level.Debug(logger).Log("msg", "serve http", "tls", *flUseTLS, "addr", *flAddr)
+			//level.Debug(logger).Log("msg", "serve http", "tls", *flUseTLS, "addr", *flAddr)
+			level.Debug(logging.Logger).Log("msg", "serve http", "tls", *flUseTLS, "addr", *flAddr)
 			if *flUseTLS {
 				return srv.ListenAndServeTLS(*flTLSCert, *flTLSKey)
 			} else {
@@ -120,7 +129,12 @@ func main() {
 		})
 	}
 
-	logutil.Fatal(logger, "msg", "terminated", "err", g.Run())
+	//logutil.Fatal(logger, "msg", "terminated", "err", g.Run())
+	err := g.Run()
+	if err != nil {
+		logging.Logger.Log("level", "error", "msg", "terminated", "err", err)
+		os.Exit(1) // Exit with a non-zero status to indicate failure
+	}
 }
 
 func validateConfigExists(configsPath string) bool {

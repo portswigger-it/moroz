@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/log"
 	"github.com/groob/moroz/santa"
 )
 
@@ -14,13 +15,14 @@ type ConfigStore interface {
 }
 
 type SantaService struct {
+	logger          log.Logger
 	global          santa.Config
 	repo            ConfigStore
 	eventDir        string
 	flPersistEvents bool
 }
 
-func NewService(ds ConfigStore, eventDir string, flPersistEvents bool) (*SantaService, error) {
+func NewService(ds ConfigStore, eventDir string, flPersistEvents bool, logger log.Logger) (*SantaService, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	global, err := ds.Config(ctx, "global")
@@ -28,6 +30,7 @@ func NewService(ds ConfigStore, eventDir string, flPersistEvents bool) (*SantaSe
 		return nil, err
 	}
 	return &SantaService{
+		logger:          logger,
 		global:          global,
 		repo:            ds,
 		eventDir:        eventDir,

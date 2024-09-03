@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -18,6 +17,7 @@ import (
 )
 
 func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
+	// TODO
 	if !svc.flPersistEvents {
 		return nil
 	}
@@ -37,7 +37,12 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 		if err := os.WriteFile(eventPath, eventInfoJSON, 0644); err != nil {
 			return errors.Wrapf(err, "write event to path %s", eventPath)
 		}
-		log.Printf("%#v", eventInfoJSON)
+		svc.logger.Log(
+			"event", "UploadEvent",
+			"machineID", machineID,
+			"eventInfo", string(eventInfoJSON),
+			"eventPath", eventPath,
+		)
 	}
 	return nil
 }
