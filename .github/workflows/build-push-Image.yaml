@@ -27,17 +27,17 @@ jobs:
       with:
         go-version: '1.23'
 
-    - name: Build the Go application - amd64
-      run: |
-        mkdir -p build/linux
-        cd cmd/moroz
-        go build -o ../../build/linux/moroz.amd64 .
+    #- name: Build the Go application - amd64
+    #  run: |
+    #    mkdir -p build/linux
+    #    cd cmd/moroz
+    #    go build -o ../../build/linux/moroz.amd64 .
 
-    - name: Build the Go application - arm64
-      run: |
-        mkdir -p build/linux
-        cd cmd/moroz
-        GOARCH=arm64 GOOS=linux go build -o ../../build/linux/moroz.arm64 .
+    #- name: Build the Go application - arm64
+    #  run: |
+    #    mkdir -p build/linux
+    #    cd cmd/moroz
+    #    GOARCH=arm64 GOOS=linux go build -o ../../build/linux/moroz.arm64 .
 
     - name: Build app
       run: |
@@ -48,7 +48,7 @@ jobs:
         do
           export GOARCH="${GOARCH}"
           mkdir -p build/${GOOS}/${GOARCH}
-          go build -o build/${GOOS}/${GOARCH}/moroz .
+          go build -o ../../build/${GOOS}/${GOARCH}/moroz cmd/moroz
         done
 
     - name: Log in to GitHub Container Registry
