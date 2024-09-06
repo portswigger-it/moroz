@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -97,7 +96,6 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 		payload.FileSHA = ev.FileSHA256
 		payload.UnixTime = ev.ExecutionTime
 		events = append(events, payload)
-		log.Printf("DEBUG: payload:%#v, orig event: #%v", payload, ev)
 	}
 
 	req := eventRequest{MachineID: id, events: events}
