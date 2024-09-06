@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/BurntSushi/toml v0.2.0
 	github.com/go-kit/kit v0.4.0
+	github.com/go-kit/log v0.2.1
 	github.com/gorilla/mux v1.6.1
 	github.com/kolide/kit v0.0.0-20180912215818-0c28f72eb2b0
 	github.com/oklog/run v1.0.0
@@ -12,7 +13,7 @@ require (
 )
 
 require (
-	github.com/go-logfmt/logfmt v0.3.0 // indirect
+	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-stack/stack v1.7.0 // indirect
 	github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f // indirect
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect

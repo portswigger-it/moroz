@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,25 +18,35 @@ import (
 )
 
 func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
+	// TODO
 	if !svc.flPersistEvents {
 		return nil
 	}
 	for _, ev := range events {
 		eventDir := filepath.Join(svc.eventDir, ev.FileSHA, machineID)
 		if err := os.MkdirAll(eventDir, 0700); err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to create event directory", "eventDir", eventDir, "err", err)
 			return errors.Wrapf(err, "create event directory %s", eventDir)
 		}
 
 		eventPath := filepath.Join(eventDir, fmt.Sprintf("%f.json", ev.UnixTime))
+		ev.EventInfo.MachineID = machineID
 
 		eventInfoJSON, err := json.Marshal(ev.EventInfo)
 		if err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to marshal event info to JSON", "err", err)
 			return errors.Wrap(err, "marshal event info to json")
 		}
-
 		if err := os.WriteFile(eventPath, eventInfoJSON, 0644); err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to write event to path", "eventPath", eventPath, "err", err)
 			return errors.Wrapf(err, "write event to path %s", eventPath)
 		}
+		svc.logger.Log(
+			"event", "UploadEvent",
+			"machineID", machineID,
+			"eventInfo", string(eventInfoJSON),
+			"eventPath", eventPath,
+		)
 	}
 	return nil
 }
@@ -86,6 +97,7 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 		payload.FileSHA = ev.FileSHA256
 		payload.UnixTime = ev.ExecutionTime
 		events = append(events, payload)
+		log.Printf("DEBUG: payload:%#v, orig event: #%v", payload, ev)
 	}
 
 	req := eventRequest{MachineID: id, events: events}

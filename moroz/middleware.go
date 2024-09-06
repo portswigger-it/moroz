@@ -1,14 +1,15 @@
 package moroz
 
 import (
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
+	"github.com/groob/moroz/logging"
 )
 
 type Middleware func(Service) Service
 
 func LoggingMiddleware(logger log.Logger) Middleware {
 	return func(next Service) Service {
-		return logmw{logger, next}
+		return logmw{logger: logging.Logger, next: next}
 	}
 }
 

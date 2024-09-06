@@ -2,6 +2,8 @@
 package santa
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 )
 
@@ -67,6 +69,7 @@ type EventUploadRequest struct {
 
 // EventUploadEvent is a single event entry
 type EventUploadEvent struct {
+	MachineID                    string         `json:"machine_id,omitempty"`
 	CurrentSessions              []string       `json:"current_sessions"`
 	Decision                     string         `json:"decision"`
 	ExecutingUser                string         `json:"executing_user"`
@@ -212,6 +215,17 @@ const (
 	Monitor ClientMode = iota
 	Lockdown
 )
+
+func (c ClientMode) String() string {
+	switch c {
+	case Monitor:
+		return "MONITOR"
+	case Lockdown:
+		return "LOCKDOWN"
+	default:
+		return fmt.Sprintf("UNKNOWN_CLIENT_MODE_%d", int(c))
+	}
+}
 
 func (c *ClientMode) UnmarshalText(text []byte) error {
 	switch mode := string(text); mode {

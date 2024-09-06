@@ -54,19 +54,45 @@ func decodePreflightRequest(ctx context.Context, r *http.Request) (interface{}, 
 	if err != nil {
 		return nil, err
 	}
+	//log.Printf("DEBUG: req body was %#v", zr)
 	req := preflightRequest{MachineID: id}
 	if err := json.NewDecoder(zr).Decode(&req.payload); err != nil {
+		//log.Printf("DEBUG: error was %#v", err)
 		return nil, err
 	}
+	//log.Printf("%#v", req)
 	return req, nil
 }
 
 func (mw logmw) Preflight(ctx context.Context, machineID string, p santa.PreflightPayload) (pf *santa.Preflight, err error) {
 	defer func(begin time.Time) {
+		/*
+				_ = mw.logger.Log(
+					"method", "Preflight",
+					"machine_id", machineID,
+					"preflight_payload", p,
+					"err", err,
+					"took", time.Since(begin),
+				)
+			}(time.Now())
+		*/
 		_ = mw.logger.Log(
 			"method", "Preflight",
 			"machine_id", machineID,
-			"preflight_payload", p,
+			"serial_number", p.SerialNumber,
+			"hostname", p.Hostname,
+			"os_version", p.OSVersion,
+			"os_build", p.OSBuild,
+			"model_identifier", p.ModelIdentifier,
+			"santa_version", p.SantaVersion,
+			"primary_user", p.PrimaryUser,
+			"binary_rule_count", p.BinaryRuleCount,
+			"certificate_rule_count", p.CertificateRuleCount,
+			"compiler_rule_count", p.CompilerRuleCount,
+			"transitive_rule_count", p.TransitiveRuleCount,
+			"teamid_rule_count", p.TeamIDRuleCount,
+			"client_mode", p.ClientMode.String(), // Explicitly convert to string
+			"request_clean_sync", p.RequestCleanSync,
 			"err", err,
 			"took", time.Since(begin),
 		)

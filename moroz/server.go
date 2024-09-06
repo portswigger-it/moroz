@@ -6,8 +6,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 )
 
@@ -47,6 +47,11 @@ func AddHTTPRoutes(r *mux.Router, e Endpoints, logger log.Logger) {
 	))
 
 	r.Methods("POST").Path("/v1/santa/postflight/{id}").Handler(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {},
+	))
+
+	// add healthz
+	r.Methods("GET").Path("/healthz").Handler(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {},
 	))
 

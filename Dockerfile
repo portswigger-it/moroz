@@ -1,8 +1,17 @@
-FROM alpine:3.6
+FROM ubuntu:24.04
 
-RUN apk --update add \
-    ca-certificates 
+ARG TARGETPLATFORM
 
-COPY ./build/linux/moroz /usr/bin/moroz
+# COPY ./build/linux/moroz /usr/bin/moroz
 
-CMD ["moroz"]
+RUN apt-get update \
+    && apt-get install -y ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /app
+
+COPY build/${TARGETPLATFORM}/moroz /moroz
+
+RUN /moroz --version
+
+CMD [./moroz]
