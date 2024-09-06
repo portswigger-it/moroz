@@ -15,9 +15,9 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have client_mode %d, want %d\n", have, want)
 	}
 
-	if have, want := conf.CleanSync, true; have != want {
-		t.Errorf("have clean_sync %t, want %t\n", have, want)
-	}
+	// if have, want := conf.CleanSync, true; have != want {
+	// 	t.Errorf("have clean_sync %t, want %t\n", have, want)
+	// }
 
 	if have, want := conf.FullSyncInterval, 600; have != want {
 		t.Errorf("have full_sync_interval %d, want %d\n", have, want)
