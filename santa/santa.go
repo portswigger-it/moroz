@@ -37,7 +37,7 @@ type Preflight struct {
 	RemountUsbMode		  string	 `json:"remount_usb_mode" toml:"remount_usb_mode"`
 	SyncType			  string	 `json:"sync_type" toml:"sync_type"`
 	OverrideFileAccessAction string  `json:"override_file_access_action,omitempty" toml:"override_file_access_action"`
-	// EnableAllEventUpload  bool       `json:"enable_all_event_upload" toml:"enable_all_event_upload"`
+	EnableAllEventUpload  bool       `json:"enable_all_event_upload" toml:"enable_all_event_upload"`
 	// CleanSync             bool       `json:"clean_sync" toml:"clean_sync"`
 }
 
