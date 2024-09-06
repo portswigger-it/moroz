@@ -4,6 +4,7 @@ import (
 	"compress/zlib"
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -54,6 +55,7 @@ func decodePreflightRequest(ctx context.Context, r *http.Request) (interface{}, 
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("DEBUG: req was %#v", r)
 	req := preflightRequest{MachineID: id}
 	if err := json.NewDecoder(zr).Decode(&req.payload); err != nil {
 		return nil, err
