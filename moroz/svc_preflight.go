@@ -55,11 +55,13 @@ func decodePreflightRequest(ctx context.Context, r *http.Request) (interface{}, 
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("DEBUG: req body was %#v", zr)
+	//log.Printf("DEBUG: req body was %#v", zr)
 	req := preflightRequest{MachineID: id}
 	if err := json.NewDecoder(zr).Decode(&req.payload); err != nil {
+		log.Printf("DEBUG: error was %#v", err)
 		return nil, err
 	}
+	log.Printf("%#v", req)
 	return req, nil
 }
 
