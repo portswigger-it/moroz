@@ -68,12 +68,12 @@ func main() {
 
 	if _, err := os.Stat(*flTLSCert); *flUseTLS && os.IsNotExist(err) {
 		logging.Logger.Log("level", "info", "msg", openSSLBash)
-		logging.Logger.Log("level", "info", "msg", "you need to provide at least a 'global.toml' configuration file in the configs folder. See the configs folder in the git repo for an example")
+		logging.Logger.Log("level", "info", "msg", "you need to provide at least a 'global.yaml' configuration file in the configs folder. See the configs folder in the git repo for an example")
 		os.Exit(2)
 	}
 
 	if !validateConfigExists(*flConfigs) {
-		logging.Logger.Log("level", "error", "msg", "you need to provide at least a 'global.toml' configuration file in the configs folder. See the configs folder in the git repo for an example")
+		logging.Logger.Log("level", "error", "msg", "you need to provide at least a 'global.yaml' configuration file in the configs folder. See the configs folder in the git repo for an example")
 		os.Exit(2) // Exit with a specific status code
 	}
 
@@ -143,7 +143,7 @@ func validateConfigExists(configsPath string) bool {
 	if _, err := os.Stat(configsPath); os.IsNotExist(err) {
 		hasConfig = false
 	}
-	if _, err := os.Stat(configsPath + "/global.toml"); os.IsNotExist(err) {
+	if _, err := os.Stat(configsPath + "/global.yaml"); os.IsNotExist(err) {
 		hasConfig = false
 	}
 	if !hasConfig {

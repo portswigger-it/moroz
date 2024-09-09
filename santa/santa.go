@@ -10,35 +10,35 @@ import (
 // Config represents the combination of the Preflight configuration and Rules
 // for a given MachineID.
 type Config struct {
-	MachineID string `toml:"machine_id,omitempty"`
+	MachineID string `yaml:"machine_id,omitempty"`
 	Preflight
-	Rules []Rule `toml:"rules"`
+	Rules []Rule `yaml:"rules"`
 }
 
 // Rule is a Santa rule.
 // Full documentation: https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/details/rules.md
 type Rule struct {
-	RuleType      RuleType `json:"rule_type" toml:"rule_type"`
-	Policy        Policy   `json:"policy" toml:"policy"`
-	Identifier    string   `json:"identifier" toml:"identifier"`
-	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
+	RuleType      RuleType `json:"rule_type" yaml:"rule_type"`
+	Policy        Policy   `json:"policy" yaml:"policy"`
+	Identifier    string   `json:"identifier" yaml:"identifier"`
+	CustomMessage string   `json:"custom_msg,omitempty" yaml:"custom_msg,omitempty"`
 }
 
 // Preflight represents sync response sent to a Santa client by the sync server.
 type Preflight struct {
-	EnableBundles         bool       `json:"enable_bundles" toml:"enable_bundles"`
-	EnableTransitiveRules bool       `json:"enable_transitive_rules" toml:"enable_transitive_rules"`
-	BatchSize             int        `json:"batch_size" toml:"batch_size"`
-	FullSyncInterval      int        `json:"full_sync_interval" toml:"full_sync_interval"`
-	ClientMode            ClientMode `json:"client_mode" toml:"client_mode"`
-	AllowedPathRegex      string     `json:"allowed_path_regex" toml:"allowed_path_regex"`
-	BlockedPathRegex      string     `json:"blocked_path_regex" toml:"blocked_path_regex"`
-	BlockUsbMount		  bool		 `json:"block_usb_mount" toml:"block_usb_mount"`
-	RemountUsbMode		  string	 `json:"remount_usb_mode" toml:"remount_usb_mode"`
-	SyncType			  string	 `json:"sync_type" toml:"sync_type"`
-	OverrideFileAccessAction string  `json:"override_file_access_action,omitempty" toml:"override_file_access_action"`
-	EnableAllEventUpload  bool       `json:"enable_all_event_upload" toml:"enable_all_event_upload"`
-	// CleanSync             bool       `json:"clean_sync" toml:"clean_sync"`
+	EnableBundles         bool       `json:"enable_bundles" yaml:"enable_bundles"`
+	EnableTransitiveRules bool       `json:"enable_transitive_rules" yaml:"enable_transitive_rules"`
+	BatchSize             int        `json:"batch_size" yaml:"batch_size"`
+	FullSyncInterval      int        `json:"full_sync_interval" yaml:"full_sync_interval"`
+	ClientMode            ClientMode `json:"client_mode" yaml:"client_mode"`
+	AllowedPathRegex      string     `json:"allowed_path_regex" yaml:"allowed_path_regex"`
+	BlockedPathRegex      string     `json:"blocked_path_regex" yaml:"blocked_path_regex"`
+	BlockUsbMount		  bool		 `json:"block_usb_mount" yaml:"block_usb_mount"`
+	RemountUsbMode		  string	 `json:"remount_usb_mode" yaml:"remount_usb_mode"`
+	SyncType			  string	 `json:"sync_type" yaml:"sync_type"`
+	OverrideFileAccessAction string  `json:"override_file_access_action,omitempty" yaml:"override_file_access_action"`
+	EnableAllEventUpload  bool       `json:"enable_all_event_upload" yaml:"enable_all_event_upload"`
+	// CleanSync             bool       `json:"clean_sync" yaml:"clean_sync"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.

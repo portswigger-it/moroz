@@ -7,9 +7,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/BurntSushi/toml"
 	"github.com/groob/moroz/santa"
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v2"
 )
 
 func NewFileRepo(path string) *FileRepo {
@@ -68,7 +68,7 @@ func loadConfigs(path string) ([]santa.Config, error) {
 		if err != nil {
 			return err
 		}
-		if filepath.Ext(info.Name()) != ".toml" {
+		if filepath.Ext(info.Name()) != ".yaml" {
 			return nil
 		}
 		file, err := os.ReadFile(path)
@@ -77,7 +77,7 @@ func loadConfigs(path string) ([]santa.Config, error) {
 		}
 		if !info.IsDir() {
 			var conf santa.Config
-			err := toml.Unmarshal(file, &conf)
+			err := yaml.Unmarshal(file, &conf)
 			if err != nil {
 				return errors.Wrapf(err, "failed to decode %v, skipping \n", info.Name())
 			}
