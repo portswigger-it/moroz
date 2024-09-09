@@ -11,7 +11,7 @@ import (
 // for a given MachineID.
 type Config struct {
 	MachineID string `yaml:"machine_id,omitempty"`
-	Preflight
+	Preflight `yaml:"config"`
 	Rules []Rule `yaml:"rules"`
 }
 

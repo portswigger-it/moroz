@@ -1,13 +1,16 @@
-allowed_path_regex: "^(?:/Users)/.*"
-batch_size: 100
-enable_all_event_upload: true
-enable_bundles: false
-enable_transitive_rules: true
-
-full_sync_interval: 600
-
+machine_id: 12345
+config:
+  client_mode: MONITOR
+  # blocked_path_regex = "^(?:/Users)/.*"
+  allowed_path_regex: "^(?:/Users)/.*"
+  batch_size: 100
+  enable_all_event_upload: true
+  enable_bundles: true
+  enable_transitive_rules: true
+  sync_type: NORMAL
+  full_sync_interval: 600
 rules:
   - rule_type: "BINARY"
     policy: "ALLOWLIST"
     identifier: "821a693e3b6c7ddb1911726ea63c7dce8a88219ca4d7cd1c137ce5423f34b722"
-    custom_msg: "moroz server"
+    custom_msg: "moroz test"
