@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/pkg/errors"
@@ -131,7 +132,6 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 	return req, nil
 }
 
-/*
 func (mw logmw) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) (err error) {
 	defer func(begin time.Time) {
 		status := "success"
@@ -158,33 +158,4 @@ func (mw logmw) UploadEvent(ctx context.Context, machineID string, events []sant
 
 	err = mw.next.UploadEvent(ctx, machineID, events)
 	return
-}
-*/
-
-func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
-	// If event persistence is disabled, just return
-	if !svc.flPersistEvents {
-		return nil
-	}
-
-	// Process each event without writing to disk
-	for _, ev := range events {
-		ev.EventInfo.MachineID = machineID
-
-		// Marshal the event info to JSON for logging purposes (but don't write it to disk)
-		eventInfoJSON, err := json.Marshal(ev.EventInfo)
-		if err != nil {
-			svc.logger.Log("level", "error", "msg", "Failed to marshal event info to JSON", "err", err)
-			return errors.Wrap(err, "marshal event info to json")
-		}
-
-		// Log the event information instead of writing it to a file
-		svc.logger.Log(
-			"event", "UploadEvent",
-			"machineID", machineID,
-			"eventInfo", string(eventInfoJSON),
-		)
-	}
-
-	return nil
 }
