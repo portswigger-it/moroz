@@ -4,11 +4,7 @@ import (
 	"compress/zlib"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/pkg/errors"
@@ -17,6 +13,7 @@ import (
 	"github.com/groob/moroz/santa"
 )
 
+/*
 func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
 	// TODO
 	if !svc.flPersistEvents {
@@ -48,6 +45,37 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 			"eventPath", eventPath,
 		)
 	}
+	return nil
+}
+*/
+
+func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
+	// Increment the counter for the number of events processed
+	metrics.EventProcessedCount.WithLabelValues(machineID).Add(float64(len(events)))
+
+	for _, ev := range events {
+		ev.EventInfo.MachineID = machineID
+
+		// Track the decision outcome for each event
+		metrics.DecisionOutcomes.WithLabelValues(ev.EventInfo.Decision).Inc()
+
+		// Marshal the event info to JSON for logging purposes
+		eventInfoJSON, err := json.Marshal(ev.EventInfo)
+		if err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to marshal event info to JSON", "err", err)
+			// Increment the error counter for marshaling errors
+			metrics.EventMarshalingErrors.WithLabelValues(machineID).Inc()
+			return errors.Wrap(err, "marshal event info to json")
+		}
+
+		// Log the event information instead of writing it to a file
+		svc.logger.Log(
+			"event", "UploadEvent",
+			"machineID", machineID,
+			"eventInfo", string(eventInfoJSON),
+		)
+	}
+
 	return nil
 }
 
@@ -103,6 +131,7 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 	return req, nil
 }
 
+/*
 func (mw logmw) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) (err error) {
 	defer func(begin time.Time) {
 		status := "success"
@@ -129,4 +158,33 @@ func (mw logmw) UploadEvent(ctx context.Context, machineID string, events []sant
 
 	err = mw.next.UploadEvent(ctx, machineID, events)
 	return
+}
+*/
+
+func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
+	// If event persistence is disabled, just return
+	if !svc.flPersistEvents {
+		return nil
+	}
+
+	// Process each event without writing to disk
+	for _, ev := range events {
+		ev.EventInfo.MachineID = machineID
+
+		// Marshal the event info to JSON for logging purposes (but don't write it to disk)
+		eventInfoJSON, err := json.Marshal(ev.EventInfo)
+		if err != nil {
+			svc.logger.Log("level", "error", "msg", "Failed to marshal event info to JSON", "err", err)
+			return errors.Wrap(err, "marshal event info to json")
+		}
+
+		// Log the event information instead of writing it to a file
+		svc.logger.Log(
+			"event", "UploadEvent",
+			"machineID", machineID,
+			"eventInfo", string(eventInfoJSON),
+		)
+	}
+
+	return nil
 }

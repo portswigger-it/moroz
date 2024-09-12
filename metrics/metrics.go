@@ -66,6 +66,30 @@ var (
 		},
 		[]string{"status"}, // Labels: success or error
 	)
+
+	EventProcessedCount = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "moroz_santa_event_processed_total",
+			Help: "Total number of individual events processed in event uploads.",
+		},
+		[]string{"machineID"}, // Labels: machine ID
+	)
+
+	EventMarshalingErrors = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "moroz_santa_event_marshaling_errors_total",
+			Help: "Total number of errors encountered while marshaling events to JSON.",
+		},
+		[]string{"machineID"}, // Labels: machine ID
+	)
+
+	DecisionOutcomes = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "moroz_santa_decision_outcomes_total",
+			Help: "Total number of decisions made during event uploads.",
+		},
+		[]string{"decision"}, // Label by decision outcome
+	)
 )
 
 func Init() {
@@ -76,4 +100,7 @@ func Init() {
 	prometheus.MustRegister(PostflightRequests)
 	prometheus.MustRegister(RuleDownloadRequestDuration)
 	prometheus.MustRegister(EventUploadRequestDuration)
+	prometheus.MustRegister(EventProcessedCount)
+	prometheus.MustRegister(EventMarshalingErrors)
+	prometheus.MustRegister(DecisionOutcomes)
 }
