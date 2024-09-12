@@ -19,6 +19,7 @@ import (
 	"github.com/oklog/run"
 
 	"github.com/groob/moroz/logging"
+	"github.com/groob/moroz/metrics"
 	"github.com/groob/moroz/moroz"
 	"github.com/groob/moroz/santaconfig"
 )
@@ -65,6 +66,9 @@ func main() {
 	// Initialize the logger
 	logging.InitLogger(*flDebug, *flLogFmt)
 	logging.Logger.Log("msg", "Application started")
+
+	// init metrics service...
+	metrics.Init()
 
 	if _, err := os.Stat(*flTLSCert); *flUseTLS && os.IsNotExist(err) {
 		logging.Logger.Log("level", "info", "msg", openSSLBash)

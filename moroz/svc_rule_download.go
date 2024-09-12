@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
+	"github.com/groob/moroz/metrics"
 	"github.com/groob/moroz/santa"
 )
 
@@ -63,6 +64,17 @@ func (mw logmw) RuleDownload(ctx context.Context, machineID string) (rules []san
 			"err", err,
 			"took", time.Since(begin),
 		)
+
+		// Determine status based on the error (nil means success)
+		status := "success"
+		if err != nil {
+			status = "error"
+		}
+		// Increment the rule download request counter
+		metrics.RuleDownloadRequests.WithLabelValues("POST").Inc()
+
+		// Observe the request duration using the existing time.Since(begin)
+		metrics.RuleDownloadRequestDuration.WithLabelValues(status).Observe(time.Since(begin).Seconds())
 	}(time.Now())
 
 	rules, err = mw.next.RuleDownload(ctx, machineID)

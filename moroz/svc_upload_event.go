@@ -13,6 +13,7 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"github.com/pkg/errors"
 
+	"github.com/groob/moroz/metrics"
 	"github.com/groob/moroz/santa"
 )
 
@@ -104,6 +105,17 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 
 func (mw logmw) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) (err error) {
 	defer func(begin time.Time) {
+		status := "success"
+		if err != nil {
+			status = "error"
+		}
+
+		// Increment the event upload request counter
+		metrics.EventUploadRequests.WithLabelValues("POST").Inc()
+
+		// Observe the request duration using time.Since(begin)
+		metrics.EventUploadRequestDuration.WithLabelValues(status).Observe(time.Since(begin).Seconds())
+
 		for _, ev := range events {
 			_ = mw.logger.Log(
 				"method", "UploadEvent",

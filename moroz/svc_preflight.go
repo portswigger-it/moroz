@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/groob/moroz/metrics"
+
 	"github.com/go-kit/kit/endpoint"
 	"github.com/groob/moroz/santa"
 )
@@ -96,6 +98,18 @@ func (mw logmw) Preflight(ctx context.Context, machineID string, p santa.Preflig
 			"err", err,
 			"took", time.Since(begin),
 		)
+
+		status := "success"
+		if err != nil {
+			status = "error"
+		}
+
+		// Increment the preflight request counter using the existing metric
+		metrics.PreflightRequests.WithLabelValues("POST").Inc()
+
+		// Observe the request duration using the existing time.Since(begin)
+		metrics.PreflightRequestDuration.WithLabelValues(status).Observe(time.Since(begin).Seconds())
+
 	}(time.Now())
 
 	pf, err = mw.next.Preflight(ctx, machineID, p)

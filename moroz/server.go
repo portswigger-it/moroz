@@ -9,6 +9,9 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
+	"github.com/groob/moroz/metrics"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func AddHTTPRoutes(r *mux.Router, e Endpoints, logger log.Logger) {
@@ -25,36 +28,53 @@ func AddHTTPRoutes(r *mux.Router, e Endpoints, logger log.Logger) {
 	// POST     /v1/santa/eventupload/:id		upload event.
 	// POST     /v1/santa/postflight/:id		postflight request. Implemented as a no-op.
 
+	// Preflight Route
 	r.Methods("POST").Path("/v1/santa/preflight/{id}").Handler(httptransport.NewServer(
 		e.PreflightEndpoint,
 		decodePreflightRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(func(ctx context.Context, req *http.Request) context.Context {
+			metrics.PreflightRequests.WithLabelValues("POST").Inc() // Increment preflight requests counter
+			return ctx
+		}))...,
 	))
 
+	// Rule Download Route
 	r.Methods("POST").Path("/v1/santa/ruledownload/{id}").Handler(httptransport.NewServer(
 		e.RuleDownloadEndpoint,
 		decodeRuleRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(func(ctx context.Context, req *http.Request) context.Context {
+			metrics.RuleDownloadRequests.WithLabelValues("POST").Inc() // Increment rule download requests counter
+			return ctx
+		}))...,
 	))
 
+	// Event Upload Route
 	r.Methods("POST").Path("/v1/santa/eventupload/{id}").Handler(httptransport.NewServer(
 		e.EventUploadEndpoint,
 		decodeEventUpload,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(func(ctx context.Context, req *http.Request) context.Context {
+			metrics.EventUploadRequests.WithLabelValues("POST").Inc() // Increment event upload requests counter
+			return ctx
+		}))...,
 	))
 
+	// Postflight Route (no-op)
 	r.Methods("POST").Path("/v1/santa/postflight/{id}").Handler(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {},
+		func(w http.ResponseWriter, r *http.Request) {
+			metrics.PostflightRequests.WithLabelValues("POST").Inc() // Increment postflight requests counter
+		},
 	))
 
-	// add healthz
+	// Health Check Route
 	r.Methods("GET").Path("/healthz").Handler(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {},
 	))
 
+	// Add Prometheus
+	r.Methods("GET").Path("/metrics").Handler(promhttp.Handler())
 }
 
 // errBadRoute is used for mux errors
